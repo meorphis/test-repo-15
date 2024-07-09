@@ -165,6 +165,13 @@ func (r *AccountPaymentMethodAccountAddPaymentMethodResponseBillingAddress) Unma
 	return apijson.Port(r.union, &r)
 }
 
+// AsUnion returns a
+// [AccountPaymentMethodAccountAddPaymentMethodResponseBillingAddressUnion]
+// interface which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AccountPaymentMethodAccountAddPaymentMethodResponseBillingAddressAddressReferenceID],
+// [AccountPaymentMethodAccountAddPaymentMethodResponseBillingAddressAddressReferenceExplicit].
 func (r AccountPaymentMethodAccountAddPaymentMethodResponseBillingAddress) AsUnion() AccountPaymentMethodAccountAddPaymentMethodResponseBillingAddressUnion {
 	return r.union
 }

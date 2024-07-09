@@ -112,9 +112,11 @@ func (r webhookNewResponseJSON) RawJSON() string {
 type WebhookNewResponseEvent struct {
 	Tag        WebhookNewResponseEventTag        `json:".tag,required"`
 	EventGroup WebhookNewResponseEventEventGroup `json:"event_group"`
-	EventList  interface{}                       `json:"event_list,required"`
-	JSON       webhookNewResponseEventJSON       `json:"-"`
-	union      WebhookNewResponseEventUnion
+	// This field can have the runtime type of
+	// [[]WebhookNewResponseEventEventListEventList].
+	EventList interface{}                 `json:"event_list,required"`
+	JSON      webhookNewResponseEventJSON `json:"-"`
+	union     WebhookNewResponseEventUnion
 }
 
 // webhookNewResponseEventJSON contains the JSON metadata for the struct
@@ -139,6 +141,11 @@ func (r *WebhookNewResponseEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.Port(r.union, &r)
 }
 
+// AsUnion returns a [WebhookNewResponseEventUnion] interface which you can cast to
+// the specific types for more type safety.
+//
+// Possible runtime types of the union are [WebhookNewResponseEventEventGroup],
+// [WebhookNewResponseEventEventList].
 func (r WebhookNewResponseEvent) AsUnion() WebhookNewResponseEventUnion {
 	return r.union
 }
@@ -331,9 +338,11 @@ func (r webhookGetResponseJSON) RawJSON() string {
 type WebhookGetResponseEvent struct {
 	Tag        WebhookGetResponseEventTag        `json:".tag,required"`
 	EventGroup WebhookGetResponseEventEventGroup `json:"event_group"`
-	EventList  interface{}                       `json:"event_list,required"`
-	JSON       webhookGetResponseEventJSON       `json:"-"`
-	union      WebhookGetResponseEventUnion
+	// This field can have the runtime type of
+	// [[]WebhookGetResponseEventEventListEventList].
+	EventList interface{}                 `json:"event_list,required"`
+	JSON      webhookGetResponseEventJSON `json:"-"`
+	union     WebhookGetResponseEventUnion
 }
 
 // webhookGetResponseEventJSON contains the JSON metadata for the struct
@@ -358,6 +367,11 @@ func (r *WebhookGetResponseEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.Port(r.union, &r)
 }
 
+// AsUnion returns a [WebhookGetResponseEventUnion] interface which you can cast to
+// the specific types for more type safety.
+//
+// Possible runtime types of the union are [WebhookGetResponseEventEventGroup],
+// [WebhookGetResponseEventEventList].
 func (r WebhookGetResponseEvent) AsUnion() WebhookGetResponseEventUnion {
 	return r.union
 }
@@ -571,9 +585,11 @@ func (r webhookListResponseWebhookJSON) RawJSON() string {
 type WebhookListResponseWebhooksEvent struct {
 	Tag        WebhookListResponseWebhooksEventTag        `json:".tag,required"`
 	EventGroup WebhookListResponseWebhooksEventEventGroup `json:"event_group"`
-	EventList  interface{}                                `json:"event_list,required"`
-	JSON       webhookListResponseWebhooksEventJSON       `json:"-"`
-	union      WebhookListResponseWebhooksEventUnion
+	// This field can have the runtime type of
+	// [[]WebhookListResponseWebhooksEventEventListEventList].
+	EventList interface{}                          `json:"event_list,required"`
+	JSON      webhookListResponseWebhooksEventJSON `json:"-"`
+	union     WebhookListResponseWebhooksEventUnion
 }
 
 // webhookListResponseWebhooksEventJSON contains the JSON metadata for the struct
@@ -598,6 +614,12 @@ func (r *WebhookListResponseWebhooksEvent) UnmarshalJSON(data []byte) (err error
 	return apijson.Port(r.union, &r)
 }
 
+// AsUnion returns a [WebhookListResponseWebhooksEventUnion] interface which you
+// can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [WebhookListResponseWebhooksEventEventGroup],
+// [WebhookListResponseWebhooksEventEventList].
 func (r WebhookListResponseWebhooksEvent) AsUnion() WebhookListResponseWebhooksEventUnion {
 	return r.union
 }
