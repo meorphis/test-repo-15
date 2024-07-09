@@ -219,6 +219,12 @@ func (r *AccountAccountGetResponsePaymentMethodsBillingAddress) UnmarshalJSON(da
 	return apijson.Port(r.union, &r)
 }
 
+// AsUnion returns a [AccountAccountGetResponsePaymentMethodsBillingAddressUnion]
+// interface which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID],
+// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit].
 func (r AccountAccountGetResponsePaymentMethodsBillingAddress) AsUnion() AccountAccountGetResponsePaymentMethodsBillingAddressUnion {
 	return r.union
 }
