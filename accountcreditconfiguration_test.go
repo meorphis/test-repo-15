@@ -13,7 +13,7 @@ import (
 	"github.com/stainless-sdks/meorphis-test-40-go/option"
 )
 
-func TestAccountGet(t *testing.T) {
+func TestAccountCreditConfigurationGet(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -24,7 +24,7 @@ func TestAccountGet(t *testing.T) {
 	client := meorphistest40.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Accounts.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+	_, err := client.Accounts.CreditConfiguration.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
 		var apierr *meorphistest40.Error
 		if errors.As(err, &apierr) {
@@ -34,7 +34,7 @@ func TestAccountGet(t *testing.T) {
 	}
 }
 
-func TestAccountUpdateWithOptionalParams(t *testing.T) {
+func TestAccountCreditConfigurationUpdateWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -45,22 +45,14 @@ func TestAccountUpdateWithOptionalParams(t *testing.T) {
 	client := meorphistest40.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Accounts.Update(
+	_, err := client.Accounts.CreditConfiguration.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		meorphistest40.AccountUpdateParams{
-			DailySpendLimit:    meorphistest40.F(int64(1000)),
-			LifetimeSpendLimit: meorphistest40.F(int64(0)),
-			MonthlySpendLimit:  meorphistest40.F(int64(0)),
-			State:              meorphistest40.F(meorphistest40.AccountUpdateParamsStateActive),
-			VerificationAddress: meorphistest40.F(meorphistest40.AccountUpdateParamsVerificationAddress{
-				Address1:   meorphistest40.F("address1"),
-				Address2:   meorphistest40.F("address2"),
-				City:       meorphistest40.F("city"),
-				State:      meorphistest40.F("state"),
-				PostalCode: meorphistest40.F("postal_code"),
-				Country:    meorphistest40.F("country"),
-			}),
+		meorphistest40.AccountCreditConfigurationUpdateParams{
+			BillingPeriod:            meorphistest40.F(int64(0)),
+			CreditLimit:              meorphistest40.F(int64(0)),
+			ExternalBankAccountToken: meorphistest40.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			PaymentPeriod:            meorphistest40.F(int64(0)),
 		},
 	)
 	if err != nil {
