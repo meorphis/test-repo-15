@@ -5,7 +5,6 @@ package meorphistest40
 import (
 	"context"
 	"net/http"
-	"os"
 
 	"github.com/stainless-sdks/meorphis-test-40-go/internal/requestconfig"
 	"github.com/stainless-sdks/meorphis-test-40-go/option"
@@ -15,34 +14,25 @@ import (
 // interacting with the meorphis-test-40 API. You should not instantiate this
 // client directly, and instead use the [NewClient] method instead.
 type Client struct {
-	Options   []option.RequestOption
-	Accounts  *AccountService
-	Payments  *PaymentService
-	Guests    *GuestService
-	Merchants *MerchantService
-	Webhooks  *WebhookService
-	Testings  *TestingService
+	Options  []option.RequestOption
+	Accounts *AccountService
+	Cards    *CardService
+	Status   *StatusService
 }
 
 // NewClient generates a new client with the default option read from the
-// environment (MEORPHIS_TEST_40_API_KEY). The option passed in as arguments are
-// applied after these default arguments, and all option will be passed down to the
-// services and requests that this client makes.
+// environment (). The option passed in as arguments are applied after these
+// default arguments, and all option will be passed down to the services and
+// requests that this client makes.
 func NewClient(opts ...option.RequestOption) (r *Client) {
 	defaults := []option.RequestOption{option.WithEnvironmentProduction()}
-	if o, ok := os.LookupEnv("MEORPHIS_TEST_40_API_KEY"); ok {
-		defaults = append(defaults, option.WithAPIKey(o))
-	}
 	opts = append(defaults, opts...)
 
 	r = &Client{Options: opts}
 
 	r.Accounts = NewAccountService(opts...)
-	r.Payments = NewPaymentService(opts...)
-	r.Guests = NewGuestService(opts...)
-	r.Merchants = NewMerchantService(opts...)
-	r.Webhooks = NewWebhookService(opts...)
-	r.Testings = NewTestingService(opts...)
+	r.Cards = NewCardService(opts...)
+	r.Status = NewStatusService(opts...)
 
 	return
 }

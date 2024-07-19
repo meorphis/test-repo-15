@@ -3,7 +3,7 @@
 <a href="https://pkg.go.dev/github.com/stainless-sdks/meorphis-test-40-go"><img src="https://pkg.go.dev/badge/github.com/stainless-sdks/meorphis-test-40-go.svg" alt="Go Reference"></a>
 
 The Meorphis Test 40 Go library provides convenient access to [the Meorphis Test 40 REST
-API](https://help.bolt.com/api-bolt/) from applications written in Go. The full API of this library can be found in [api.md](api.md).
+API](https://docs.meorphis-test-40.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
@@ -42,16 +42,15 @@ import (
 
 func main() {
 	client := meorphistest40.NewClient(
-		option.WithAPIKey("My API Key"),      // defaults to os.LookupEnv("MEORPHIS_TEST_40_API_KEY")
 		option.WithEnvironmentEnvironment1(), // defaults to option.WithEnvironmentProduction()
 	)
-	accountAccountGetResponse, err := client.Accounts.AccountGet(context.TODO(), meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	card, err := client.Cards.New(context.TODO(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("%+v\n", accountAccountGetResponse.Addresses)
+	fmt.Printf("%+v\n", card.Token)
 }
 
 ```
@@ -140,7 +139,7 @@ client := meorphistest40.NewClient(
 	option.WithHeader("X-Some-Header", "custom_header_info"),
 )
 
-client.Accounts.AccountGet(context.TODO(), ...,
+client.Cards.New(context.TODO(), ...,
 	// Override the header
 	option.WithHeader("X-Some-Header", "some_other_custom_header_info"),
 	// Add an undocumented field to the request body, using sjson syntax
@@ -169,8 +168,8 @@ When the API returns a non-success status code, we return an error with type
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.Accounts.AccountGet(context.TODO(), meorphistest40.AccountAccountGetParams{
-	XPublishableKey: meorphistest40.F("string"),
+_, err := client.Cards.New(context.TODO(), meorphistest40.CardNewParams{
+	Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 })
 if err != nil {
 	var apierr *meorphistest40.Error
@@ -178,7 +177,7 @@ if err != nil {
 		println(string(apierr.DumpRequest(true)))  // Prints the serialized HTTP request
 		println(string(apierr.DumpResponse(true))) // Prints the serialized HTTP response
 	}
-	panic(err.Error()) // GET "/account": 400 Bad Request { ... }
+	panic(err.Error()) // GET "/cards": 400 Bad Request { ... }
 }
 ```
 
@@ -196,10 +195,10 @@ To set a per-retry timeout, use `option.WithRequestTimeout()`.
 // This sets the timeout for the request, including all the retries.
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
-client.Accounts.AccountGet(
+client.Cards.New(
 	ctx,
-	meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	},
 	// This sets the per-retry timeout
 	option.WithRequestTimeout(20*time.Second),
@@ -234,10 +233,10 @@ client := meorphistest40.NewClient(
 )
 
 // Override per-request:
-client.Accounts.AccountGet(
+client.Cards.New(
 	context.TODO(),
-	meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	},
 	option.WithMaxRetries(5),
 )

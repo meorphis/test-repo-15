@@ -4,14 +4,14 @@ package meorphistest40
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
-	"reflect"
 
 	"github.com/stainless-sdks/meorphis-test-40-go/internal/apijson"
 	"github.com/stainless-sdks/meorphis-test-40-go/internal/param"
 	"github.com/stainless-sdks/meorphis-test-40-go/internal/requestconfig"
 	"github.com/stainless-sdks/meorphis-test-40-go/option"
-	"github.com/tidwall/gjson"
 )
 
 // AccountService contains methods and other services that help with interacting
@@ -21,10 +21,8 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewAccountService] method instead.
 type AccountService struct {
-	Options        []option.RequestOption
-	Addresses      *AccountAddressService
-	Exists         *AccountExistService
-	PaymentMethods *AccountPaymentMethodService
+	Options             []option.RequestOption
+	CreditConfiguration *AccountCreditConfigurationService
 }
 
 // NewAccountService generates a new service that applies the given options to each
@@ -33,407 +31,266 @@ type AccountService struct {
 func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 	r = &AccountService{}
 	r.Options = opts
-	r.Addresses = NewAccountAddressService(opts...)
-	r.Exists = NewAccountExistService(opts...)
-	r.PaymentMethods = NewAccountPaymentMethodService(opts...)
+	r.CreditConfiguration = NewAccountCreditConfigurationService(opts...)
 	return
 }
 
-// Retrieve a shopper's account details, such as addresses and payment information
-func (r *AccountService) AccountGet(ctx context.Context, query AccountAccountGetParams, opts ...option.RequestOption) (res *AccountAccountGetResponse, err error) {
+// Get account configuration such as spend limits.
+func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *AccountConfiguration, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "account"
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return
+	}
+	path := fmt.Sprintf("accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
-type AccountAccountGetResponse struct {
-	Addresses      []AccountAccountGetResponseAddress       `json:"addresses,required"`
-	PaymentMethods []AccountAccountGetResponsePaymentMethod `json:"payment_methods,required"`
-	Profile        AccountAccountGetResponseProfile         `json:"profile"`
-	JSON           accountAccountGetResponseJSON            `json:"-"`
-}
-
-// accountAccountGetResponseJSON contains the JSON metadata for the struct
-// [AccountAccountGetResponse]
-type accountAccountGetResponseJSON struct {
-	Addresses      apijson.Field
-	PaymentMethods apijson.Field
-	Profile        apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
-}
-
-func (r *AccountAccountGetResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountAccountGetResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AccountAccountGetResponseAddress struct {
-	ID             string                               `json:"id,required"`
-	CountryCode    string                               `json:"country_code,required"`
-	FirstName      string                               `json:"first_name,required"`
-	LastName       string                               `json:"last_name,required"`
-	Locality       string                               `json:"locality,required"`
-	PostalCode     string                               `json:"postal_code,required"`
-	StreetAddress1 string                               `json:"street_address1,required"`
-	Company        string                               `json:"company"`
-	Email          string                               `json:"email" format:"email"`
-	IsDefault      bool                                 `json:"is_default"`
-	Phone          string                               `json:"phone" format:"phone"`
-	Region         string                               `json:"region"`
-	StreetAddress2 string                               `json:"street_address2"`
-	JSON           accountAccountGetResponseAddressJSON `json:"-"`
-}
-
-// accountAccountGetResponseAddressJSON contains the JSON metadata for the struct
-// [AccountAccountGetResponseAddress]
-type accountAccountGetResponseAddressJSON struct {
-	ID             apijson.Field
-	CountryCode    apijson.Field
-	FirstName      apijson.Field
-	LastName       apijson.Field
-	Locality       apijson.Field
-	PostalCode     apijson.Field
-	StreetAddress1 apijson.Field
-	Company        apijson.Field
-	Email          apijson.Field
-	IsDefault      apijson.Field
-	Phone          apijson.Field
-	Region         apijson.Field
-	StreetAddress2 apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
-}
-
-func (r *AccountAccountGetResponseAddress) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountAccountGetResponseAddressJSON) RawJSON() string {
-	return r.raw
-}
-
-type AccountAccountGetResponsePaymentMethod struct {
-	Tag AccountAccountGetResponsePaymentMethodsTag `json:".tag,required"`
-	// The expiration date of the credit card. TODO TO MAKE EXPIRATION REUSABLE
-	Expiration string `json:"expiration,required" format:"^\\d{4}-\\d{2}$"`
-	// The last 4 digits of the credit card number.
-	Last4 string `json:"last4,required" format:"^\\d{4}$"`
-	// The credit card network.
-	Network AccountAccountGetResponsePaymentMethodsNetwork `json:"network,required"`
-	ID      string                                         `json:"id"`
-	// The ID of credit card's billing address
-	BillingAddressID string                                     `json:"billing_address_id"`
-	JSON             accountAccountGetResponsePaymentMethodJSON `json:"-"`
-}
-
-// accountAccountGetResponsePaymentMethodJSON contains the JSON metadata for the
-// struct [AccountAccountGetResponsePaymentMethod]
-type accountAccountGetResponsePaymentMethodJSON struct {
-	Tag              apijson.Field
-	Expiration       apijson.Field
-	Last4            apijson.Field
-	Network          apijson.Field
-	ID               apijson.Field
-	BillingAddressID apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *AccountAccountGetResponsePaymentMethod) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountAccountGetResponsePaymentMethodJSON) RawJSON() string {
-	return r.raw
-}
-
-type AccountAccountGetResponsePaymentMethodsTag string
-
-const (
-	AccountAccountGetResponsePaymentMethodsTagCreditCard AccountAccountGetResponsePaymentMethodsTag = "credit_card"
-)
-
-func (r AccountAccountGetResponsePaymentMethodsTag) IsKnown() bool {
-	switch r {
-	case AccountAccountGetResponsePaymentMethodsTagCreditCard:
-		return true
-	}
-	return false
-}
-
-// The credit card's billing address
-type AccountAccountGetResponsePaymentMethodsBillingAddress struct {
-	// The type of address reference
-	Tag AccountAccountGetResponsePaymentMethodsBillingAddressTag `json:".tag,required"`
-	// The address's ID
-	ID             string                                                    `json:"id,required"`
-	FirstName      string                                                    `json:"first_name"`
-	LastName       string                                                    `json:"last_name"`
-	Company        string                                                    `json:"company"`
-	StreetAddress1 string                                                    `json:"street_address1"`
-	StreetAddress2 string                                                    `json:"street_address2"`
-	Locality       string                                                    `json:"locality"`
-	PostalCode     string                                                    `json:"postal_code"`
-	Region         string                                                    `json:"region"`
-	CountryCode    string                                                    `json:"country_code"`
-	Email          string                                                    `json:"email" format:"email"`
-	Phone          string                                                    `json:"phone" format:"phone"`
-	JSON           accountAccountGetResponsePaymentMethodsBillingAddressJSON `json:"-"`
-	union          AccountAccountGetResponsePaymentMethodsBillingAddressUnion
-}
-
-// accountAccountGetResponsePaymentMethodsBillingAddressJSON contains the JSON
-// metadata for the struct [AccountAccountGetResponsePaymentMethodsBillingAddress]
-type accountAccountGetResponsePaymentMethodsBillingAddressJSON struct {
-	Tag            apijson.Field
-	ID             apijson.Field
-	FirstName      apijson.Field
-	LastName       apijson.Field
-	Company        apijson.Field
-	StreetAddress1 apijson.Field
-	StreetAddress2 apijson.Field
-	Locality       apijson.Field
-	PostalCode     apijson.Field
-	Region         apijson.Field
-	CountryCode    apijson.Field
-	Email          apijson.Field
-	Phone          apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
-}
-
-func (r accountAccountGetResponsePaymentMethodsBillingAddressJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AccountAccountGetResponsePaymentMethodsBillingAddress) UnmarshalJSON(data []byte) (err error) {
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AccountAccountGetResponsePaymentMethodsBillingAddressUnion]
-// interface which you can cast to the specific types for more type safety.
+// Update account configuration such as spend limits and verification address. Can
+// only be run on accounts that are part of the program managed by this API key.
 //
-// Possible runtime types of the union are
-// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID],
-// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit].
-func (r AccountAccountGetResponsePaymentMethodsBillingAddress) AsUnion() AccountAccountGetResponsePaymentMethodsBillingAddressUnion {
-	return r.union
+// Accounts that are in the `PAUSED` state will not be able to transact or create
+// new cards.
+func (r *AccountService) Update(ctx context.Context, accountToken string, body AccountUpdateParams, opts ...option.RequestOption) (res *AccountConfiguration, err error) {
+	opts = append(r.Options[:], opts...)
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return
+	}
+	path := fmt.Sprintf("accounts/%s", accountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
+	return
 }
 
-// The credit card's billing address
-//
-// Union satisfied by
-// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID] or
-// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit].
-type AccountAccountGetResponsePaymentMethodsBillingAddressUnion interface {
-	implementsAccountAccountGetResponsePaymentMethodsBillingAddress()
+type AccountConfiguration struct {
+	// Globally unique identifier for the account. This is the same as the
+	// account_token returned by the enroll endpoint. If using this parameter, do not
+	// include pagination.
+	Token string `json:"token,required" format:"uuid"`
+	// Spend limit information for the user containing the daily, monthly, and lifetime
+	// spend limit of the account. Any charges to a card owned by this account will be
+	// declined once their transaction volume has surpassed the value in the applicable
+	// time limit (rolling). A lifetime limit of 0 indicates that the lifetime limit
+	// feature is disabled.
+	SpendLimit AccountConfigurationSpendLimit `json:"spend_limit,required"`
+	// Account state:
+	//
+	//   - `ACTIVE` - Account is able to transact and create new cards.
+	//   - `PAUSED` - Account will not be able to transact or create new cards. It can be
+	//     set back to `ACTIVE`.
+	//   - `CLOSED` - Account will permanently not be able to transact or create new
+	//     cards.
+	State         AccountConfigurationState         `json:"state,required"`
+	AccountHolder AccountConfigurationAccountHolder `json:"account_holder"`
+	// List of identifiers for the Auth Rule(s) that are applied on the account.
+	AuthRuleTokens      []string                                `json:"auth_rule_tokens"`
+	VerificationAddress AccountConfigurationVerificationAddress `json:"verification_address"`
+	JSON                accountConfigurationJSON                `json:"-"`
 }
 
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AccountAccountGetResponsePaymentMethodsBillingAddressUnion)(nil)).Elem(),
-		".tag",
-		apijson.UnionVariant{
-			TypeFilter:         gjson.JSON,
-			Type:               reflect.TypeOf(AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID{}),
-			DiscriminatorValue: "id",
-		},
-		apijson.UnionVariant{
-			TypeFilter:         gjson.JSON,
-			Type:               reflect.TypeOf(AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit{}),
-			DiscriminatorValue: "explicit",
-		},
-	)
+// accountConfigurationJSON contains the JSON metadata for the struct
+// [AccountConfiguration]
+type accountConfigurationJSON struct {
+	Token               apijson.Field
+	SpendLimit          apijson.Field
+	State               apijson.Field
+	AccountHolder       apijson.Field
+	AuthRuleTokens      apijson.Field
+	VerificationAddress apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
 }
 
-type AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID struct {
-	// The address's ID
-	ID string `json:"id,required"`
-	// The type of address reference
-	Tag  AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDTag  `json:".tag,required"`
-	JSON accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDJSON `json:"-"`
+func (r *AccountConfiguration) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
 }
 
-// accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDJSON
-// contains the JSON metadata for the struct
-// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID]
-type accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDJSON struct {
-	ID          apijson.Field
-	Tag         apijson.Field
+func (r accountConfigurationJSON) RawJSON() string {
+	return r.raw
+}
+
+// Spend limit information for the user containing the daily, monthly, and lifetime
+// spend limit of the account. Any charges to a card owned by this account will be
+// declined once their transaction volume has surpassed the value in the applicable
+// time limit (rolling). A lifetime limit of 0 indicates that the lifetime limit
+// feature is disabled.
+type AccountConfigurationSpendLimit struct {
+	// Daily spend limit (in cents).
+	Daily int64 `json:"daily,required"`
+	// Total spend limit over account lifetime (in cents).
+	Lifetime int64 `json:"lifetime,required"`
+	// Monthly spend limit (in cents).
+	Monthly int64                              `json:"monthly,required"`
+	JSON    accountConfigurationSpendLimitJSON `json:"-"`
+}
+
+// accountConfigurationSpendLimitJSON contains the JSON metadata for the struct
+// [AccountConfigurationSpendLimit]
+type accountConfigurationSpendLimitJSON struct {
+	Daily       apijson.Field
+	Lifetime    apijson.Field
+	Monthly     apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID) UnmarshalJSON(data []byte) (err error) {
+func (r *AccountConfigurationSpendLimit) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDJSON) RawJSON() string {
+func (r accountConfigurationSpendLimitJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceID) implementsAccountAccountGetResponsePaymentMethodsBillingAddress() {
-}
-
-// The type of address reference
-type AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDTag string
+// Account state:
+//
+//   - `ACTIVE` - Account is able to transact and create new cards.
+//   - `PAUSED` - Account will not be able to transact or create new cards. It can be
+//     set back to `ACTIVE`.
+//   - `CLOSED` - Account will permanently not be able to transact or create new
+//     cards.
+type AccountConfigurationState string
 
 const (
-	AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDTagID AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDTag = "id"
+	AccountConfigurationStateActive AccountConfigurationState = "ACTIVE"
+	AccountConfigurationStatePaused AccountConfigurationState = "PAUSED"
+	AccountConfigurationStateClosed AccountConfigurationState = "CLOSED"
 )
 
-func (r AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDTag) IsKnown() bool {
+func (r AccountConfigurationState) IsKnown() bool {
 	switch r {
-	case AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceIDTagID:
+	case AccountConfigurationStateActive, AccountConfigurationStatePaused, AccountConfigurationStateClosed:
 		return true
 	}
 	return false
 }
 
-type AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit struct {
-	ID string `json:"id,required"`
-	// The type of address reference
-	Tag            AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitTag  `json:".tag,required"`
-	CountryCode    string                                                                            `json:"country_code,required"`
-	FirstName      string                                                                            `json:"first_name,required"`
-	LastName       string                                                                            `json:"last_name,required"`
-	Locality       string                                                                            `json:"locality,required"`
-	PostalCode     string                                                                            `json:"postal_code,required"`
-	StreetAddress1 string                                                                            `json:"street_address1,required"`
-	Company        string                                                                            `json:"company"`
-	Email          string                                                                            `json:"email" format:"email"`
-	Phone          string                                                                            `json:"phone" format:"phone"`
-	Region         string                                                                            `json:"region"`
-	StreetAddress2 string                                                                            `json:"street_address2"`
-	JSON           accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitJSON `json:"-"`
+type AccountConfigurationAccountHolder struct {
+	// Globally unique identifier for the account holder.
+	Token string `json:"token,required"`
+	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
+	// users of businesses. Account_token of the enrolled business associated with an
+	// enrolled AUTHORIZED_USER individual.
+	BusinessAccountToken string `json:"business_account_token,required"`
+	// Email address.
+	Email string `json:"email,required"`
+	// Phone number of the individual.
+	PhoneNumber string                                `json:"phone_number,required"`
+	JSON        accountConfigurationAccountHolderJSON `json:"-"`
 }
 
-// accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitJSON
-// contains the JSON metadata for the struct
-// [AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit]
-type accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitJSON struct {
-	ID             apijson.Field
-	Tag            apijson.Field
-	CountryCode    apijson.Field
-	FirstName      apijson.Field
-	LastName       apijson.Field
-	Locality       apijson.Field
-	PostalCode     apijson.Field
-	StreetAddress1 apijson.Field
-	Company        apijson.Field
-	Email          apijson.Field
-	Phone          apijson.Field
-	Region         apijson.Field
-	StreetAddress2 apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+// accountConfigurationAccountHolderJSON contains the JSON metadata for the struct
+// [AccountConfigurationAccountHolder]
+type accountConfigurationAccountHolderJSON struct {
+	Token                apijson.Field
+	BusinessAccountToken apijson.Field
+	Email                apijson.Field
+	PhoneNumber          apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
 }
 
-func (r *AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit) UnmarshalJSON(data []byte) (err error) {
+func (r *AccountConfigurationAccountHolder) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r accountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitJSON) RawJSON() string {
+func (r accountConfigurationAccountHolderJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicit) implementsAccountAccountGetResponsePaymentMethodsBillingAddress() {
+type AccountConfigurationVerificationAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// City name.
+	City string `json:"city,required"`
+	// Country name. Only USA is currently supported.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string                                      `json:"address2"`
+	JSON     accountConfigurationVerificationAddressJSON `json:"-"`
 }
 
-// The type of address reference
-type AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitTag string
-
-const (
-	AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitTagExplicit AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitTag = "explicit"
-)
-
-func (r AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitTag) IsKnown() bool {
-	switch r {
-	case AccountAccountGetResponsePaymentMethodsBillingAddressAddressReferenceExplicitTagExplicit:
-		return true
-	}
-	return false
-}
-
-// The type of address reference
-type AccountAccountGetResponsePaymentMethodsBillingAddressTag string
-
-const (
-	AccountAccountGetResponsePaymentMethodsBillingAddressTagID       AccountAccountGetResponsePaymentMethodsBillingAddressTag = "id"
-	AccountAccountGetResponsePaymentMethodsBillingAddressTagExplicit AccountAccountGetResponsePaymentMethodsBillingAddressTag = "explicit"
-)
-
-func (r AccountAccountGetResponsePaymentMethodsBillingAddressTag) IsKnown() bool {
-	switch r {
-	case AccountAccountGetResponsePaymentMethodsBillingAddressTagID, AccountAccountGetResponsePaymentMethodsBillingAddressTagExplicit:
-		return true
-	}
-	return false
-}
-
-// The credit card network.
-type AccountAccountGetResponsePaymentMethodsNetwork string
-
-const (
-	AccountAccountGetResponsePaymentMethodsNetworkVisa         AccountAccountGetResponsePaymentMethodsNetwork = "visa"
-	AccountAccountGetResponsePaymentMethodsNetworkMastercard   AccountAccountGetResponsePaymentMethodsNetwork = "mastercard"
-	AccountAccountGetResponsePaymentMethodsNetworkAmex         AccountAccountGetResponsePaymentMethodsNetwork = "amex"
-	AccountAccountGetResponsePaymentMethodsNetworkDiscover     AccountAccountGetResponsePaymentMethodsNetwork = "discover"
-	AccountAccountGetResponsePaymentMethodsNetworkJcb          AccountAccountGetResponsePaymentMethodsNetwork = "jcb"
-	AccountAccountGetResponsePaymentMethodsNetworkUnionpay     AccountAccountGetResponsePaymentMethodsNetwork = "unionpay"
-	AccountAccountGetResponsePaymentMethodsNetworkAlliancedata AccountAccountGetResponsePaymentMethodsNetwork = "alliancedata"
-	AccountAccountGetResponsePaymentMethodsNetworkCitiplcc     AccountAccountGetResponsePaymentMethodsNetwork = "citiplcc"
-)
-
-func (r AccountAccountGetResponsePaymentMethodsNetwork) IsKnown() bool {
-	switch r {
-	case AccountAccountGetResponsePaymentMethodsNetworkVisa, AccountAccountGetResponsePaymentMethodsNetworkMastercard, AccountAccountGetResponsePaymentMethodsNetworkAmex, AccountAccountGetResponsePaymentMethodsNetworkDiscover, AccountAccountGetResponsePaymentMethodsNetworkJcb, AccountAccountGetResponsePaymentMethodsNetworkUnionpay, AccountAccountGetResponsePaymentMethodsNetworkAlliancedata, AccountAccountGetResponsePaymentMethodsNetworkCitiplcc:
-		return true
-	}
-	return false
-}
-
-type AccountAccountGetResponseProfile struct {
-	// An email address.
-	Email string `json:"email"`
-	// The given name of the person associated with this record.
-	FirstName string `json:"first_name"`
-	// The last name of the person associated with this record.
-	LastName string `json:"last_name"`
-	// A phone number following E164 standards, in its globalized format, i.e.
-	// prepended with a plus sign.
-	Phone string                               `json:"phone"`
-	JSON  accountAccountGetResponseProfileJSON `json:"-"`
-}
-
-// accountAccountGetResponseProfileJSON contains the JSON metadata for the struct
-// [AccountAccountGetResponseProfile]
-type accountAccountGetResponseProfileJSON struct {
-	Email       apijson.Field
-	FirstName   apijson.Field
-	LastName    apijson.Field
-	Phone       apijson.Field
+// accountConfigurationVerificationAddressJSON contains the JSON metadata for the
+// struct [AccountConfigurationVerificationAddress]
+type accountConfigurationVerificationAddressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AccountAccountGetResponseProfile) UnmarshalJSON(data []byte) (err error) {
+func (r *AccountConfigurationVerificationAddress) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r accountAccountGetResponseProfileJSON) RawJSON() string {
+func (r accountConfigurationVerificationAddressJSON) RawJSON() string {
 	return r.raw
 }
 
-type AccountAccountGetParams struct {
-	XPublishableKey param.Field[string] `header:"X-Publishable-Key,required"`
+type AccountUpdateParams struct {
+	// Amount (in cents) for the account's daily spend limit. By default the daily
+	// spend limit is set to $1,250.
+	DailySpendLimit param.Field[int64] `json:"daily_spend_limit"`
+	// Amount (in cents) for the account's lifetime spend limit. Once this limit is
+	// reached, no transactions will be accepted on any card created for this account
+	// until the limit is updated. Note that a spend limit of 0 is effectively no
+	// limit, and should only be used to reset or remove a prior limit. Only a limit of
+	// 1 or above will result in declined transactions due to checks against the
+	// account limit. This behavior differs from the daily spend limit and the monthly
+	// spend limit.
+	LifetimeSpendLimit param.Field[int64] `json:"lifetime_spend_limit"`
+	// Amount (in cents) for the account's monthly spend limit. By default the monthly
+	// spend limit is set to $5,000.
+	MonthlySpendLimit param.Field[int64] `json:"monthly_spend_limit"`
+	// Account states.
+	State param.Field[AccountUpdateParamsState] `json:"state"`
+	// Address used during Address Verification Service (AVS) checks during
+	// transactions if enabled via Auth Rules.
+	VerificationAddress param.Field[AccountUpdateParamsVerificationAddress] `json:"verification_address"`
+}
+
+func (r AccountUpdateParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Account states.
+type AccountUpdateParamsState string
+
+const (
+	AccountUpdateParamsStateActive AccountUpdateParamsState = "ACTIVE"
+	AccountUpdateParamsStatePaused AccountUpdateParamsState = "PAUSED"
+)
+
+func (r AccountUpdateParamsState) IsKnown() bool {
+	switch r {
+	case AccountUpdateParamsStateActive, AccountUpdateParamsStatePaused:
+		return true
+	}
+	return false
+}
+
+// Address used during Address Verification Service (AVS) checks during
+// transactions if enabled via Auth Rules.
+type AccountUpdateParamsVerificationAddress struct {
+	Address1   param.Field[string] `json:"address1"`
+	Address2   param.Field[string] `json:"address2"`
+	City       param.Field[string] `json:"city"`
+	Country    param.Field[string] `json:"country"`
+	PostalCode param.Field[string] `json:"postal_code"`
+	State      param.Field[string] `json:"state"`
+}
+
+func (r AccountUpdateParamsVerificationAddress) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }

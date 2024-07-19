@@ -22,13 +22,12 @@ func TestUsage(t *testing.T) {
 	}
 	client := meorphistest40.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("My API Key"),
 	)
-	accountAccountGetResponse, err := client.Accounts.AccountGet(context.TODO(), meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	card, err := client.Cards.New(context.TODO(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	t.Logf("%+v\n", accountAccountGetResponse.Addresses)
+	t.Logf("%+v\n", card.Token)
 }

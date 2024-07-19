@@ -36,8 +36,8 @@ func TestUserAgentHeader(t *testing.T) {
 			},
 		}),
 	)
-	client.Accounts.AccountGet(context.Background(), meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if userAgent != fmt.Sprintf("MeorphisTest40/Go %s", internal.PackageVersion) {
 		t.Errorf("Expected User-Agent to be correct, but got: %#v", userAgent)
@@ -61,8 +61,8 @@ func TestRetryAfter(t *testing.T) {
 			},
 		}),
 	)
-	res, err := client.Accounts.AccountGet(context.Background(), meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -89,8 +89,8 @@ func TestRetryAfterMs(t *testing.T) {
 			},
 		}),
 	)
-	res, err := client.Accounts.AccountGet(context.Background(), meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -113,8 +113,8 @@ func TestContextCancel(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithCancel(context.Background())
 	cancel()
-	res, err := client.Accounts.AccountGet(cancelCtx, meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	res, err := client.Cards.New(cancelCtx, meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -134,8 +134,8 @@ func TestContextCancelDelay(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithTimeout(context.Background(), 2*time.Millisecond)
 	defer cancel()
-	res, err := client.Accounts.AccountGet(cancelCtx, meorphistest40.AccountAccountGetParams{
-		XPublishableKey: meorphistest40.F("string"),
+	res, err := client.Cards.New(cancelCtx, meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("expected there to be a cancel error and for the response to be nil")
@@ -161,8 +161,8 @@ func TestContextDeadline(t *testing.T) {
 				},
 			}),
 		)
-		res, err := client.Accounts.AccountGet(deadlineCtx, meorphistest40.AccountAccountGetParams{
-			XPublishableKey: meorphistest40.F("string"),
+		res, err := client.Cards.New(deadlineCtx, meorphistest40.CardNewParams{
+			Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 		})
 		if err == nil || res != nil {
 			t.Error("expected there to be a deadline error and for the response to be nil")
