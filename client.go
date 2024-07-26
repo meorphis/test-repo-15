@@ -6,8 +6,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/meorphis/test-repo-11/internal/requestconfig"
-	"github.com/meorphis/test-repo-11/option"
+	"github.com/stainless-sdks/meorphis-test-40-go/internal/requestconfig"
+	"github.com/stainless-sdks/meorphis-test-40-go/option"
 )
 
 // Client creates a struct with services and top level methods that help with

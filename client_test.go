@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/meorphis/test-repo-11"
-	"github.com/meorphis/test-repo-11/internal"
-	"github.com/meorphis/test-repo-11/option"
+	"github.com/stainless-sdks/meorphis-test-40-go"
+	"github.com/stainless-sdks/meorphis-test-40-go/internal"
+	"github.com/stainless-sdks/meorphis-test-40-go/option"
 )
 
 type closureTransport struct {
