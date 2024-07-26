@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/meorphis/test-repo-11/internal/param"
+	"github.com/stainless-sdks/meorphis-test-40-go/internal/param"
 )
 
 type Struct struct {

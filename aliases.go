@@ -3,7 +3,7 @@
 package meorphistest40
 
 import (
-	"github.com/meorphis/test-repo-11/internal/apierror"
+	"github.com/stainless-sdks/meorphis-test-40-go/internal/apierror"
 )
 
 type Error = apierror.Error
