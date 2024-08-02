@@ -39,7 +39,7 @@ func TestUserAgentHeader(t *testing.T) {
 	client.Cards.New(context.Background(), meorphistest40.CardNewParams{
 		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
-	if userAgent != fmt.Sprintf("MeorphisTest44/Go %s", internal.PackageVersion) {
+	if userAgent != fmt.Sprintf("MeorphisTest40/Go %s", internal.PackageVersion) {
 		t.Errorf("Expected User-Agent to be correct, but got: %#v", userAgent)
 	}
 }
