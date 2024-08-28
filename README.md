@@ -1,9 +1,9 @@
-# Meorphis Test 40 Go API Library
+# Testcloudflare Go API Library
 
 <a href="https://pkg.go.dev/github.com/stainless-sdks/meorphis-test-40-go"><img src="https://pkg.go.dev/badge/github.com/stainless-sdks/meorphis-test-40-go.svg" alt="Go Reference"></a>
 
-The Meorphis Test 40 Go library provides convenient access to [the Meorphis Test 40 REST
-API](https://docs.meorphis-test-40.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
+The Testcloudflare Go library provides convenient access to [the Testcloudflare REST
+API](https://developers.cloudflare.com/api) from applications written in Go. The full API of this library can be found in [api.md](api.md).
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
 
@@ -11,7 +11,7 @@ It is generated with [Stainless](https://www.stainlessapi.com/).
 
 ```go
 import (
-	"github.com/stainless-sdks/meorphis-test-40-go" // imported as meorphistest40
+	"github.com/stainless-sdks/meorphis-test-40-go" // imported as cloudflare
 )
 ```
 
@@ -38,19 +38,25 @@ import (
 
 	"github.com/stainless-sdks/meorphis-test-40-go"
 	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/stainless-sdks/meorphis-test-40-go/zones"
 )
 
 func main() {
-	client := meorphistest40.NewClient(
-		option.WithEnvironmentEnvironment1(), // defaults to option.WithEnvironmentProduction()
+	client := cloudflare.NewClient(
+		option.WithAPIKey("144c9defac04969c7bfad8efaa8ea194"), // defaults to os.LookupEnv("CLOUDFLARE_API_KEY")
+		option.WithAPIEmail("user@example.com"),               // defaults to os.LookupEnv("CLOUDFLARE_EMAIL")
 	)
-	card, err := client.Cards.New(context.TODO(), meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	zone, err := client.Zones.New(context.TODO(), zones.ZoneNewParams{
+		Account: cloudflare.F(zones.ZoneNewParamsAccount{
+			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+		}),
+		Name: cloudflare.F("example.com"),
+		Type: cloudflare.F(zones.TypeFull),
 	})
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("%+v\n", card.Token)
+	fmt.Printf("%+v\n", zone.ID)
 }
 
 ```
@@ -69,18 +75,18 @@ To send a null, use `Null[T]()`, and to send a nonconforming value, use `Raw[T](
 
 ```go
 params := FooParams{
-	Name: meorphistest40.F("hello"),
+	Name: cloudflare.F("hello"),
 
 	// Explicitly send `"description": null`
-	Description: meorphistest40.Null[string](),
+	Description: cloudflare.Null[string](),
 
-	Point: meorphistest40.F(meorphistest40.Point{
-		X: meorphistest40.Int(0),
-		Y: meorphistest40.Int(1),
+	Point: cloudflare.F(cloudflare.Point{
+		X: cloudflare.Int(0),
+		Y: cloudflare.Int(1),
 
 		// In cases where the API specifies a given type,
 		// but you want to send something else, use `Raw`:
-		Z: meorphistest40.Raw[int64](0.01), // sends a float
+		Z: cloudflare.Raw[int64](0.01), // sends a float
 	}),
 }
 ```
@@ -134,12 +140,12 @@ This library uses the functional options pattern. Functions defined in the
 requests. For example:
 
 ```go
-client := meorphistest40.NewClient(
+client := cloudflare.NewClient(
 	// Adds a header to every request made by the client
 	option.WithHeader("X-Some-Header", "custom_header_info"),
 )
 
-client.Cards.New(context.TODO(), ...,
+client.Zones.New(context.TODO(), ...,
 	// Override the header
 	option.WithHeader("X-Some-Header", "some_other_custom_header_info"),
 	// Add an undocumented field to the request body, using sjson syntax
@@ -155,29 +161,52 @@ This library provides some conveniences for working with paginated list endpoint
 
 You can use `.ListAutoPaging()` methods to iterate through items across all pages:
 
+```go
+iter := client.Accounts.ListAutoPaging(context.TODO(), accounts.AccountListParams{})
+// Automatically fetches more pages as needed.
+for iter.Next() {
+	accountListResponse := iter.Current()
+	fmt.Printf("%+v\n", accountListResponse)
+}
+if err := iter.Err(); err != nil {
+	panic(err.Error())
+}
+```
+
 Or you can use simple `.List()` methods to fetch a single page and receive a standard response object
 with additional helper methods like `.GetNextPage()`, e.g.:
+
+```go
+page, err := client.Accounts.List(context.TODO(), accounts.AccountListParams{})
+for page != nil {
+	for _, account := range page.Result {
+		fmt.Printf("%+v\n", account)
+	}
+	page, err = page.GetNextPage()
+}
+if err != nil {
+	panic(err.Error())
+}
+```
 
 ### Errors
 
 When the API returns a non-success status code, we return an error with type
-`*meorphistest40.Error`. This contains the `StatusCode`, `*http.Request`, and
+`*cloudflare.Error`. This contains the `StatusCode`, `*http.Request`, and
 `*http.Response` values of the request, as well as the JSON of the error body
 (much like other response objects in the SDK).
 
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.Cards.New(context.TODO(), meorphistest40.CardNewParams{
-	Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
-})
+_, err := client.Zones.Get(context.TODO(), "023e105f4ecef8ad9ca31a8372d0c353")
 if err != nil {
-	var apierr *meorphistest40.Error
+	var apierr *cloudflare.Error
 	if errors.As(err, &apierr) {
 		println(string(apierr.DumpRequest(true)))  // Prints the serialized HTTP request
 		println(string(apierr.DumpResponse(true))) // Prints the serialized HTTP response
 	}
-	panic(err.Error()) // GET "/cards": 400 Bad Request { ... }
+	panic(err.Error()) // GET "/zones/{zone_id}": 400 Bad Request { ... }
 }
 ```
 
@@ -195,11 +224,10 @@ To set a per-retry timeout, use `option.WithRequestTimeout()`.
 // This sets the timeout for the request, including all the retries.
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
-client.Cards.New(
+client.Zones.Edit(
 	ctx,
-	meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
-	},
+	"023e105f4ecef8ad9ca31a8372d0c353",
+	zones.ZoneEditParams{},
 	// This sets the per-retry timeout
 	option.WithRequestTimeout(20*time.Second),
 )
@@ -215,7 +243,7 @@ The file name and content-type can be customized by implementing `Name() string`
 string` on the run-time type of `io.Reader`. Note that `os.File` implements `Name() string`, so a
 file returned by `os.Open` will be sent with the file name on disk.
 
-We also provide a helper `meorphistest40.FileParam(reader io.Reader, filename string, contentType string)`
+We also provide a helper `cloudflare.FileParam(reader io.Reader, filename string, contentType string)`
 which can be used to wrap any `io.Reader` with the appropriate file name and content type.
 
 ### Retries
@@ -228,16 +256,14 @@ You can use the `WithMaxRetries` option to configure or disable this:
 
 ```go
 // Configure the default for all requests:
-client := meorphistest40.NewClient(
+client := cloudflare.NewClient(
 	option.WithMaxRetries(0), // default is 2
 )
 
 // Override per-request:
-client.Cards.New(
+client.Zones.Get(
 	context.TODO(),
-	meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
-	},
+	"023e105f4ecef8ad9ca31a8372d0c353",
 	option.WithMaxRetries(5),
 )
 ```
@@ -275,9 +301,9 @@ or the `option.WithJSONSet()` methods.
 
 ```go
 params := FooNewParams{
-    ID:   meorphistest40.F("id_xxxx"),
-    Data: meorphistest40.F(FooNewParamsData{
-        FirstName: meorphistest40.F("John"),
+    ID:   cloudflare.F("id_xxxx"),
+    Data: cloudflare.F(FooNewParamsData{
+        FirstName: cloudflare.F("John"),
     }),
 }
 client.Foo.New(context.Background(), params, option.WithJSONSet("data.last_name", "Doe"))
@@ -312,7 +338,7 @@ func Logger(req *http.Request, next option.MiddlewareNext) (res *http.Response, 
     return res, err
 }
 
-client := meorphistest40.NewClient(
+client := cloudflare.NewClient(
 	option.WithMiddleware(Logger),
 )
 ```

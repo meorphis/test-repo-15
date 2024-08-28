@@ -25,7 +25,7 @@ import (
 
 func getDefaultHeaders() map[string]string {
 	return map[string]string{
-		"User-Agent": fmt.Sprintf("MeorphisTest40/Go %s", internal.PackageVersion),
+		"User-Agent": fmt.Sprintf("Testcloudflare/Go %s", internal.PackageVersion),
 	}
 }
 
@@ -171,6 +171,10 @@ type RequestConfig struct {
 	BaseURL        *url.URL
 	HTTPClient     *http.Client
 	Middlewares    []middleware
+	APIToken       string
+	APIKey         string
+	APIEmail       string
+	UserServiceKey string
 	// If ResponseBodyInto not nil, then we will attempt to deserialize into
 	// ResponseBodyInto. If Destination is a []byte, then it will return the body as
 	// is.
