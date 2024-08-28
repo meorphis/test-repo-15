@@ -15,7 +15,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
-// RequestOption is an option for the requests made by the meorphis-test-40 API Client
+// RequestOption is an option for the requests made by the testcloudflare API Client
 // which can be supplied to clients, services, and methods. You can read more about this functional
 // options pattern in our [README].
 //
@@ -225,12 +225,37 @@ func WithRequestTimeout(dur time.Duration) RequestOption {
 // environment to be the "production" environment. An environment specifies which base URL
 // to use by default.
 func WithEnvironmentProduction() RequestOption {
-	return WithBaseURL("https://api.acme.com/v1/")
+	return WithBaseURL("https://api.cloudflare.com/client/v4/")
 }
 
-// WithEnvironmentEnvironment1 returns a RequestOption that sets the current
-// environment to be the "environment_1" environment. An environment specifies which base URL
-// to use by default.
-func WithEnvironmentEnvironment1() RequestOption {
-	return WithBaseURL("https://sandbox.acme.com/v1/")
+// WithAPIToken returns a RequestOption that sets the client setting "api_token".
+func WithAPIToken(value string) RequestOption {
+	return func(r *requestconfig.RequestConfig) error {
+		r.APIToken = value
+		return r.Apply(WithHeader("authorization", fmt.Sprintf("Bearer %s", r.APIToken)))
+	}
+}
+
+// WithAPIKey returns a RequestOption that sets the client setting "api_key".
+func WithAPIKey(value string) RequestOption {
+	return func(r *requestconfig.RequestConfig) error {
+		r.APIKey = value
+		return r.Apply(WithHeader("X-Auth-Key", r.APIKey))
+	}
+}
+
+// WithAPIEmail returns a RequestOption that sets the client setting "api_email".
+func WithAPIEmail(value string) RequestOption {
+	return func(r *requestconfig.RequestConfig) error {
+		r.APIEmail = value
+		return r.Apply(WithHeader("X-Auth-Email", r.APIEmail))
+	}
+}
+
+// WithUserServiceKey returns a RequestOption that sets the client setting "user_service_key".
+func WithUserServiceKey(value string) RequestOption {
+	return func(r *requestconfig.RequestConfig) error {
+		r.UserServiceKey = value
+		return r.Apply(WithHeader("X-Auth-User-Service-Key", r.UserServiceKey))
+	}
 }

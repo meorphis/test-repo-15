@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-package meorphistest40_test
+package cloudflare_test
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 	"github.com/stainless-sdks/meorphis-test-40-go"
 	"github.com/stainless-sdks/meorphis-test-40-go/internal/testutil"
 	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/stainless-sdks/meorphis-test-40-go/zones"
 )
 
 func TestUsage(t *testing.T) {
@@ -20,14 +21,20 @@ func TestUsage(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := meorphistest40.NewClient(
+	client := cloudflare.NewClient(
 		option.WithBaseURL(baseURL),
+		option.WithAPIKey("144c9defac04969c7bfad8efaa8ea194"),
+		option.WithAPIEmail("user@example.com"),
 	)
-	card, err := client.Cards.New(context.TODO(), meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	zone, err := client.Zones.New(context.TODO(), zones.ZoneNewParams{
+		Account: cloudflare.F(zones.ZoneNewParamsAccount{
+			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+		}),
+		Name: cloudflare.F("example.com"),
+		Type: cloudflare.F(zones.TypeFull),
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	t.Logf("%+v\n", card.Token)
+	t.Logf("%+v\n", zone.ID)
 }

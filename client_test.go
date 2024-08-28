@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-package meorphistest40_test
+package cloudflare_test
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 	"github.com/stainless-sdks/meorphis-test-40-go"
 	"github.com/stainless-sdks/meorphis-test-40-go/internal"
 	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/stainless-sdks/meorphis-test-40-go/zones"
 )
 
 type closureTransport struct {
@@ -24,7 +25,7 @@ func (t *closureTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 
 func TestUserAgentHeader(t *testing.T) {
 	var userAgent string
-	client := meorphistest40.NewClient(
+	client := cloudflare.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -36,17 +37,21 @@ func TestUserAgentHeader(t *testing.T) {
 			},
 		}),
 	)
-	client.Cards.New(context.Background(), meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	client.Zones.New(context.Background(), zones.ZoneNewParams{
+		Account: cloudflare.F(zones.ZoneNewParamsAccount{
+			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+		}),
+		Name: cloudflare.F("example.com"),
+		Type: cloudflare.F(zones.TypeFull),
 	})
-	if userAgent != fmt.Sprintf("MeorphisTest40/Go %s", internal.PackageVersion) {
+	if userAgent != fmt.Sprintf("Testcloudflare/Go %s", internal.PackageVersion) {
 		t.Errorf("Expected User-Agent to be correct, but got: %#v", userAgent)
 	}
 }
 
 func TestRetryAfter(t *testing.T) {
 	attempts := 0
-	client := meorphistest40.NewClient(
+	client := cloudflare.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -61,8 +66,12 @@ func TestRetryAfter(t *testing.T) {
 			},
 		}),
 	)
-	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	res, err := client.Zones.New(context.Background(), zones.ZoneNewParams{
+		Account: cloudflare.F(zones.ZoneNewParamsAccount{
+			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+		}),
+		Name: cloudflare.F("example.com"),
+		Type: cloudflare.F(zones.TypeFull),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -74,7 +83,7 @@ func TestRetryAfter(t *testing.T) {
 
 func TestRetryAfterMs(t *testing.T) {
 	attempts := 0
-	client := meorphistest40.NewClient(
+	client := cloudflare.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -89,8 +98,12 @@ func TestRetryAfterMs(t *testing.T) {
 			},
 		}),
 	)
-	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	res, err := client.Zones.New(context.Background(), zones.ZoneNewParams{
+		Account: cloudflare.F(zones.ZoneNewParamsAccount{
+			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+		}),
+		Name: cloudflare.F("example.com"),
+		Type: cloudflare.F(zones.TypeFull),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -101,7 +114,7 @@ func TestRetryAfterMs(t *testing.T) {
 }
 
 func TestContextCancel(t *testing.T) {
-	client := meorphistest40.NewClient(
+	client := cloudflare.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -113,8 +126,12 @@ func TestContextCancel(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithCancel(context.Background())
 	cancel()
-	res, err := client.Cards.New(cancelCtx, meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	res, err := client.Zones.New(cancelCtx, zones.ZoneNewParams{
+		Account: cloudflare.F(zones.ZoneNewParamsAccount{
+			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+		}),
+		Name: cloudflare.F("example.com"),
+		Type: cloudflare.F(zones.TypeFull),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -122,7 +139,7 @@ func TestContextCancel(t *testing.T) {
 }
 
 func TestContextCancelDelay(t *testing.T) {
-	client := meorphistest40.NewClient(
+	client := cloudflare.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -134,8 +151,12 @@ func TestContextCancelDelay(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithTimeout(context.Background(), 2*time.Millisecond)
 	defer cancel()
-	res, err := client.Cards.New(cancelCtx, meorphistest40.CardNewParams{
-		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	res, err := client.Zones.New(cancelCtx, zones.ZoneNewParams{
+		Account: cloudflare.F(zones.ZoneNewParamsAccount{
+			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+		}),
+		Name: cloudflare.F("example.com"),
+		Type: cloudflare.F(zones.TypeFull),
 	})
 	if err == nil || res != nil {
 		t.Error("expected there to be a cancel error and for the response to be nil")
@@ -151,7 +172,7 @@ func TestContextDeadline(t *testing.T) {
 	defer cancel()
 
 	go func() {
-		client := meorphistest40.NewClient(
+		client := cloudflare.NewClient(
 			option.WithHTTPClient(&http.Client{
 				Transport: &closureTransport{
 					fn: func(req *http.Request) (*http.Response, error) {
@@ -161,8 +182,12 @@ func TestContextDeadline(t *testing.T) {
 				},
 			}),
 		)
-		res, err := client.Cards.New(deadlineCtx, meorphistest40.CardNewParams{
-			Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+		res, err := client.Zones.New(deadlineCtx, zones.ZoneNewParams{
+			Account: cloudflare.F(zones.ZoneNewParamsAccount{
+				ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
+			}),
+			Name: cloudflare.F("example.com"),
+			Type: cloudflare.F(zones.TypeFull),
 		})
 		if err == nil || res != nil {
 			t.Error("expected there to be a deadline error and for the response to be nil")

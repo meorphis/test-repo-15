@@ -1,4 +1,4 @@
-package meorphistest40
+package cloudflare
 
 import (
 	"github.com/stainless-sdks/meorphis-test-40-go/internal/param"
