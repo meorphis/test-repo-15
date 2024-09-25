@@ -1,8 +1,8 @@
-# Meorphis Test 43 Go API Library
+# Meorphis Test 44 Go API Library
 
 <a href="https://pkg.go.dev/github.com/stainless-sdks/meorphis-test-40-go"><img src="https://pkg.go.dev/badge/github.com/stainless-sdks/meorphis-test-40-go.svg" alt="Go Reference"></a>
 
-The Meorphis Test 43 Go library provides convenient access to [the Meorphis Test 43 REST
+The Meorphis Test 44 Go library provides convenient access to [the Meorphis Test 44 REST
 API](https://docs.meorphis-test-40.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
