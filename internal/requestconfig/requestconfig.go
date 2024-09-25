@@ -25,7 +25,7 @@ import (
 
 func getDefaultHeaders() map[string]string {
 	return map[string]string{
-		"User-Agent": fmt.Sprintf("Testcloudflare/Go %s", internal.PackageVersion),
+		"User-Agent": fmt.Sprintf("MeorphisTest42/Go %s", internal.PackageVersion),
 	}
 }
 
@@ -137,6 +137,7 @@ func NewRequestConfig(ctx context.Context, method string, u string, body interfa
 	}
 
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("X-Stainless-Retry-Count", "0")
 	for k, v := range getDefaultHeaders() {
 		req.Header.Add(k, v)
 	}
@@ -171,10 +172,6 @@ type RequestConfig struct {
 	BaseURL        *url.URL
 	HTTPClient     *http.Client
 	Middlewares    []middleware
-	APIToken       string
-	APIKey         string
-	APIEmail       string
-	UserServiceKey string
 	// If ResponseBodyInto not nil, then we will attempt to deserialize into
 	// ResponseBodyInto. If Destination is a []byte, then it will return the body as
 	// is.
@@ -334,6 +331,9 @@ func (cfg *RequestConfig) Execute() (err error) {
 		handler = applyMiddleware(cfg.Middlewares[i], handler)
 	}
 
+	// Don't send the current retry count in the headers if the caller modified the header defaults.
+	shouldSendRetryCount := cfg.Request.Header.Get("X-Stainless-Retry-Count") == "0"
+
 	var res *http.Response
 	for retryCount := 0; retryCount <= cfg.MaxRetries; retryCount += 1 {
 		ctx := cfg.Request.Context()
@@ -343,7 +343,12 @@ func (cfg *RequestConfig) Execute() (err error) {
 			defer cancel()
 		}
 
-		res, err = handler(cfg.Request.Clone(ctx))
+		req := cfg.Request.Clone(ctx)
+		if shouldSendRetryCount {
+			req.Header.Set("X-Stainless-Retry-Count", strconv.Itoa(retryCount))
+		}
+
+		res, err = handler(req)
 		if ctx != nil && ctx.Err() != nil {
 			return ctx.Err()
 		}
@@ -468,10 +473,13 @@ func (cfg *RequestConfig) Clone(ctx context.Context) *RequestConfig {
 		return nil
 	}
 	new := &RequestConfig{
-		MaxRetries: cfg.MaxRetries,
-		Context:    ctx,
-		Request:    req,
-		HTTPClient: cfg.HTTPClient,
+		MaxRetries:     cfg.MaxRetries,
+		RequestTimeout: cfg.RequestTimeout,
+		Context:        ctx,
+		Request:        req,
+		BaseURL:        cfg.BaseURL,
+		HTTPClient:     cfg.HTTPClient,
+		Middlewares:    cfg.Middlewares,
 	}
 
 	return new

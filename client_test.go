@@ -1,18 +1,18 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-package cloudflare_test
+package meorphistest40_test
 
 import (
 	"context"
 	"fmt"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 
 	"github.com/stainless-sdks/meorphis-test-40-go"
 	"github.com/stainless-sdks/meorphis-test-40-go/internal"
 	"github.com/stainless-sdks/meorphis-test-40-go/option"
-	"github.com/stainless-sdks/meorphis-test-40-go/zones"
 )
 
 type closureTransport struct {
@@ -25,7 +25,7 @@ func (t *closureTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 
 func TestUserAgentHeader(t *testing.T) {
 	var userAgent string
-	client := cloudflare.NewClient(
+	client := meorphistest40.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -37,25 +37,21 @@ func TestUserAgentHeader(t *testing.T) {
 			},
 		}),
 	)
-	client.Zones.New(context.Background(), zones.ZoneNewParams{
-		Account: cloudflare.F(zones.ZoneNewParamsAccount{
-			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
-		}),
-		Name: cloudflare.F("example.com"),
-		Type: cloudflare.F(zones.TypeFull),
+	client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
-	if userAgent != fmt.Sprintf("Testcloudflare/Go %s", internal.PackageVersion) {
+	if userAgent != fmt.Sprintf("MeorphisTest42/Go %s", internal.PackageVersion) {
 		t.Errorf("Expected User-Agent to be correct, but got: %#v", userAgent)
 	}
 }
 
 func TestRetryAfter(t *testing.T) {
-	attempts := 0
-	client := cloudflare.NewClient(
+	retryCountHeaders := make([]string, 0)
+	client := meorphistest40.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
-					attempts++
+					retryCountHeaders = append(retryCountHeaders, req.Header.Get("X-Stainless-Retry-Count"))
 					return &http.Response{
 						StatusCode: http.StatusTooManyRequests,
 						Header: http.Header{
@@ -66,24 +62,89 @@ func TestRetryAfter(t *testing.T) {
 			},
 		}),
 	)
-	res, err := client.Zones.New(context.Background(), zones.ZoneNewParams{
-		Account: cloudflare.F(zones.ZoneNewParamsAccount{
-			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
-		}),
-		Name: cloudflare.F("example.com"),
-		Type: cloudflare.F(zones.TypeFull),
+	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
 	}
-	if want := 3; attempts != want {
-		t.Errorf("Expected %d attempts, got %d", want, attempts)
+
+	attempts := len(retryCountHeaders)
+	if attempts != 3 {
+		t.Errorf("Expected %d attempts, got %d", 3, attempts)
+	}
+
+	expectedRetryCountHeaders := []string{"0", "1", "2"}
+	if !reflect.DeepEqual(retryCountHeaders, expectedRetryCountHeaders) {
+		t.Errorf("Expected %v retry count headers, got %v", expectedRetryCountHeaders, retryCountHeaders)
+	}
+}
+
+func TestDeleteRetryCountHeader(t *testing.T) {
+	retryCountHeaders := make([]string, 0)
+	client := meorphistest40.NewClient(
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					retryCountHeaders = append(retryCountHeaders, req.Header.Get("X-Stainless-Retry-Count"))
+					return &http.Response{
+						StatusCode: http.StatusTooManyRequests,
+						Header: http.Header{
+							http.CanonicalHeaderKey("Retry-After"): []string{"0.1"},
+						},
+					}, nil
+				},
+			},
+		}),
+		option.WithHeaderDel("X-Stainless-Retry-Count"),
+	)
+	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	})
+	if err == nil || res != nil {
+		t.Error("Expected there to be a cancel error and for the response to be nil")
+	}
+
+	expectedRetryCountHeaders := []string{"", "", ""}
+	if !reflect.DeepEqual(retryCountHeaders, expectedRetryCountHeaders) {
+		t.Errorf("Expected %v retry count headers, got %v", expectedRetryCountHeaders, retryCountHeaders)
+	}
+}
+
+func TestOverwriteRetryCountHeader(t *testing.T) {
+	retryCountHeaders := make([]string, 0)
+	client := meorphistest40.NewClient(
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					retryCountHeaders = append(retryCountHeaders, req.Header.Get("X-Stainless-Retry-Count"))
+					return &http.Response{
+						StatusCode: http.StatusTooManyRequests,
+						Header: http.Header{
+							http.CanonicalHeaderKey("Retry-After"): []string{"0.1"},
+						},
+					}, nil
+				},
+			},
+		}),
+		option.WithHeader("X-Stainless-Retry-Count", "42"),
+	)
+	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
+	})
+	if err == nil || res != nil {
+		t.Error("Expected there to be a cancel error and for the response to be nil")
+	}
+
+	expectedRetryCountHeaders := []string{"42", "42", "42"}
+	if !reflect.DeepEqual(retryCountHeaders, expectedRetryCountHeaders) {
+		t.Errorf("Expected %v retry count headers, got %v", expectedRetryCountHeaders, retryCountHeaders)
 	}
 }
 
 func TestRetryAfterMs(t *testing.T) {
 	attempts := 0
-	client := cloudflare.NewClient(
+	client := meorphistest40.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -98,12 +159,8 @@ func TestRetryAfterMs(t *testing.T) {
 			},
 		}),
 	)
-	res, err := client.Zones.New(context.Background(), zones.ZoneNewParams{
-		Account: cloudflare.F(zones.ZoneNewParamsAccount{
-			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
-		}),
-		Name: cloudflare.F("example.com"),
-		Type: cloudflare.F(zones.TypeFull),
+	res, err := client.Cards.New(context.Background(), meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -114,7 +171,7 @@ func TestRetryAfterMs(t *testing.T) {
 }
 
 func TestContextCancel(t *testing.T) {
-	client := cloudflare.NewClient(
+	client := meorphistest40.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -126,12 +183,8 @@ func TestContextCancel(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithCancel(context.Background())
 	cancel()
-	res, err := client.Zones.New(cancelCtx, zones.ZoneNewParams{
-		Account: cloudflare.F(zones.ZoneNewParamsAccount{
-			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
-		}),
-		Name: cloudflare.F("example.com"),
-		Type: cloudflare.F(zones.TypeFull),
+	res, err := client.Cards.New(cancelCtx, meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -139,7 +192,7 @@ func TestContextCancel(t *testing.T) {
 }
 
 func TestContextCancelDelay(t *testing.T) {
-	client := cloudflare.NewClient(
+	client := meorphistest40.NewClient(
 		option.WithHTTPClient(&http.Client{
 			Transport: &closureTransport{
 				fn: func(req *http.Request) (*http.Response, error) {
@@ -151,12 +204,8 @@ func TestContextCancelDelay(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithTimeout(context.Background(), 2*time.Millisecond)
 	defer cancel()
-	res, err := client.Zones.New(cancelCtx, zones.ZoneNewParams{
-		Account: cloudflare.F(zones.ZoneNewParamsAccount{
-			ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
-		}),
-		Name: cloudflare.F("example.com"),
-		Type: cloudflare.F(zones.TypeFull),
+	res, err := client.Cards.New(cancelCtx, meorphistest40.CardNewParams{
+		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
 	if err == nil || res != nil {
 		t.Error("expected there to be a cancel error and for the response to be nil")
@@ -172,7 +221,7 @@ func TestContextDeadline(t *testing.T) {
 	defer cancel()
 
 	go func() {
-		client := cloudflare.NewClient(
+		client := meorphistest40.NewClient(
 			option.WithHTTPClient(&http.Client{
 				Transport: &closureTransport{
 					fn: func(req *http.Request) (*http.Response, error) {
@@ -182,12 +231,8 @@ func TestContextDeadline(t *testing.T) {
 				},
 			}),
 		)
-		res, err := client.Zones.New(deadlineCtx, zones.ZoneNewParams{
-			Account: cloudflare.F(zones.ZoneNewParamsAccount{
-				ID: cloudflare.F("023e105f4ecef8ad9ca31a8372d0c353"),
-			}),
-			Name: cloudflare.F("example.com"),
-			Type: cloudflare.F(zones.TypeFull),
+		res, err := client.Cards.New(deadlineCtx, meorphistest40.CardNewParams{
+			Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 		})
 		if err == nil || res != nil {
 			t.Error("expected there to be a deadline error and for the response to be nil")
