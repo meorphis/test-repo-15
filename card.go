@@ -16,7 +16,7 @@ import (
 )
 
 // CardService contains methods and other services that help with interacting with
-// the meorphis-test-42 API.
+// the meorphis-test-43 API.
 //
 // Note, unlike clients, this service does not read variables from the environment
 // automatically. You should not instantiate this service directly, and instead use
