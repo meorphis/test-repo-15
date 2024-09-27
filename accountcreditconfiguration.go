@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/apijson"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/param"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/requestconfig"
-	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/meorphis/test-repo-15/internal/apijson"
+	"github.com/meorphis/test-repo-15/internal/param"
+	"github.com/meorphis/test-repo-15/internal/requestconfig"
+	"github.com/meorphis/test-repo-15/option"
 )
 
 // AccountCreditConfigurationService contains methods and other services that help

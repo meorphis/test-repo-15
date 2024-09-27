@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/param"
+	"github.com/meorphis/test-repo-15/internal/param"
 )
 
 var encoders sync.Map // map[reflect.Type]encoderFunc
