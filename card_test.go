@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stainless-sdks/meorphis-test-40-go"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/testutil"
-	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/meorphis/test-repo-15"
+	"github.com/meorphis/test-repo-15/internal/testutil"
+	"github.com/meorphis/test-repo-15/option"
 )
 
 func TestCardNewWithOptionalParams(t *testing.T) {
