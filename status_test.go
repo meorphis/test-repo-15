@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/meorphis/test-repo-15"
-	"github.com/meorphis/test-repo-15/internal/testutil"
-	"github.com/meorphis/test-repo-15/option"
+	"github.com/meorphis/test-repo-15/v2"
+	"github.com/meorphis/test-repo-15/v2/internal/testutil"
+	"github.com/meorphis/test-repo-15/v2/option"
 )
 
 func TestStatusList(t *testing.T) {
