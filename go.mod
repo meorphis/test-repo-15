@@ -1,4 +1,4 @@
-module github.com/stainless-sdks/meorphis-test-40-go
+module github.com/meorphis/test-repo-15/v2
 
 go 1.21
 

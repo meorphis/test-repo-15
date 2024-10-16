@@ -6,12 +6,12 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/requestconfig"
-	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/meorphis/test-repo-15/v2/internal/requestconfig"
+	"github.com/meorphis/test-repo-15/v2/option"
 )
 
 // Client creates a struct with services and top level methods that help with
-// interacting with the meorphis-test-44 API. You should not instantiate this
+// interacting with the meorphis-test-46 API. You should not instantiate this
 // client directly, and instead use the [NewClient] method instead.
 type Client struct {
 	Options  []option.RequestOption
