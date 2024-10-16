@@ -11,7 +11,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/meorphis/test-repo-15/internal/requestconfig"
+	"github.com/meorphis/test-repo-15/v2/internal/requestconfig"
 	"github.com/tidwall/sjson"
 )
 

@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/meorphis/test-repo-15/internal/apijson"
-	"github.com/meorphis/test-repo-15/internal/requestconfig"
-	"github.com/meorphis/test-repo-15/option"
+	"github.com/meorphis/test-repo-15/v2/internal/apijson"
+	"github.com/meorphis/test-repo-15/v2/internal/requestconfig"
+	"github.com/meorphis/test-repo-15/v2/option"
 )
 
 // CardFinancialTransactionService contains methods and other services that help

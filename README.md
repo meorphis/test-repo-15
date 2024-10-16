@@ -1,6 +1,6 @@
 # Meorphis Test 46 Go API Library
 
-<a href="https://pkg.go.dev/github.com/meorphis/test-repo-15"><img src="https://pkg.go.dev/badge/github.com/meorphis/test-repo-15.svg" alt="Go Reference"></a>
+<a href="https://pkg.go.dev/github.com/meorphis/test-repo-15/v2"><img src="https://pkg.go.dev/badge/github.com/meorphis/test-repo-15.svg" alt="Go Reference"></a>
 
 The Meorphis Test 46 Go library provides convenient access to [the Meorphis Test 46 REST
 API](https://docs.meorphis-test-40.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
@@ -13,7 +13,7 @@ It is generated with [Stainless](https://www.stainlessapi.com/).
 
 ```go
 import (
-	"github.com/meorphis/test-repo-15" // imported as meorphistest40
+	"github.com/meorphis/test-repo-15/v2" // imported as meorphistest40
 )
 ```
 
@@ -24,7 +24,7 @@ Or to pin the version:
 <!-- x-release-please-start-version -->
 
 ```sh
-go get -u 'github.com/meorphis/test-repo-15@v0.0.1-alpha.0'
+go get -u 'github.com/meorphis/test-repo-15@v2.0.0'
 ```
 
 <!-- x-release-please-end -->
@@ -44,8 +44,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/meorphis/test-repo-15"
-	"github.com/meorphis/test-repo-15/option"
+	"github.com/meorphis/test-repo-15/v2"
+	"github.com/meorphis/test-repo-15/v2/option"
 )
 
 func main() {
