@@ -1,8 +1,8 @@
-# Meorphis Test 45 Go API Library
+# Meorphis Test 46 Go API Library
 
 <a href="https://pkg.go.dev/github.com/meorphis/test-repo-15"><img src="https://pkg.go.dev/badge/github.com/meorphis/test-repo-15.svg" alt="Go Reference"></a>
 
-The Meorphis Test 45 Go library provides convenient access to [the Meorphis Test 45 REST
+The Meorphis Test 46 Go library provides convenient access to [the Meorphis Test 46 REST
 API](https://docs.meorphis-test-40.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
 
 It is generated with [Stainless](https://www.stainlessapi.com/).
@@ -346,3 +346,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
 We are keen for your feedback; please open an [issue](https://www.github.com/meorphis/test-repo-15/issues) with questions, bugs, or suggestions.
+
+## Contributing
+
+See [the contributing documentation](./CONTRIBUTING.md).
