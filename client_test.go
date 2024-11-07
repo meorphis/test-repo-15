@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stainless-sdks/meorphis-test-40-go"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal"
-	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/meorphis/test-repo-15/v2"
+	"github.com/meorphis/test-repo-15/v2/internal"
+	"github.com/meorphis/test-repo-15/v2/option"
 )
 
 type closureTransport struct {
@@ -40,7 +40,7 @@ func TestUserAgentHeader(t *testing.T) {
 	client.Cards.New(context.Background(), meorphistest40.CardNewParams{
 		Type: meorphistest40.F(meorphistest40.CardNewParamsTypeReplaceMe),
 	})
-	if userAgent != fmt.Sprintf("MeorphisTest44/Go %s", internal.PackageVersion) {
+	if userAgent != fmt.Sprintf("MeorphisTest46/Go %s", internal.PackageVersion) {
 		t.Errorf("Expected User-Agent to be correct, but got: %#v", userAgent)
 	}
 }

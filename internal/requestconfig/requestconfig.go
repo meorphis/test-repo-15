@@ -17,15 +17,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stainless-sdks/meorphis-test-40-go/internal"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/apierror"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/apiform"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/apiquery"
+	"github.com/meorphis/test-repo-15/v2/internal"
+	"github.com/meorphis/test-repo-15/v2/internal/apierror"
+	"github.com/meorphis/test-repo-15/v2/internal/apiform"
+	"github.com/meorphis/test-repo-15/v2/internal/apiquery"
 )
 
 func getDefaultHeaders() map[string]string {
 	return map[string]string{
-		"User-Agent": fmt.Sprintf("MeorphisTest44/Go %s", internal.PackageVersion),
+		"User-Agent": fmt.Sprintf("MeorphisTest46/Go %s", internal.PackageVersion),
 	}
 }
 

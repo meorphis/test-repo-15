@@ -6,13 +6,13 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/apijson"
-	"github.com/stainless-sdks/meorphis-test-40-go/internal/requestconfig"
-	"github.com/stainless-sdks/meorphis-test-40-go/option"
+	"github.com/meorphis/test-repo-15/v2/internal/apijson"
+	"github.com/meorphis/test-repo-15/v2/internal/requestconfig"
+	"github.com/meorphis/test-repo-15/v2/option"
 )
 
 // StatusService contains methods and other services that help with interacting
-// with the meorphis-test-44 API.
+// with the meorphis-test-46 API.
 //
 // Note, unlike clients, this service does not read variables from the environment
 // automatically. You should not instantiate this service directly, and instead use
