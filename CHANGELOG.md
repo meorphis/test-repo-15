@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.1 (2024-11-08)
+
+Full Changelog: [v2.0.0...v2.0.1](https://github.com/meorphis/test-repo-15/compare/v2.0.0...v2.0.1)
+
+### Features
+
+* **api:** update ([9558b13](https://github.com/meorphis/test-repo-15/commit/9558b1334acaf532e4855f807076ff4e5119890d))
+
+
+### Chores
+
+* **docs:** update ([ec054ed](https://github.com/meorphis/test-repo-15/commit/ec054edac7bc1095fe7e1981611dbd9a2f57b60f))
+* **docs:** Update README.md ([acd9f50](https://github.com/meorphis/test-repo-15/commit/acd9f50da3da8e8061df9a9cebe4cbfec2f8baf0))
+
 ## 2.0.0 (2024-10-16)
 
 Full Changelog: [v0.0.1-alpha.0...v2.0.0](https://github.com/meorphis/test-repo-15/compare/v0.0.1-alpha.0...v2.0.0)
