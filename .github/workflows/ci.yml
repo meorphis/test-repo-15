@@ -1,10 +1,12 @@
 name: CI
 on:
   push:
-    branches-ignore:
-      - 'generated'
-      - 'codegen/**'
-      - 'integrated/**'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - next
 
 jobs:
   lint:
@@ -45,16 +47,16 @@ jobs:
         run: ./scripts/build
 
       - name: Get GitHub OIDC Token
-        if: github.repository == 'stainless-sdks-staging/eric-co-typescript'
+        if: github.repository == 'stainless-sdks/eric-co-typescript'
         id: github-oidc
         uses: actions/github-script@v6
         with:
           script: core.setOutput('github_token', await core.getIDToken());
 
       - name: Upload tarball
-        if: github.repository == 'stainless-sdks-staging/eric-co-typescript'
+        if: github.repository == 'stainless-sdks/eric-co-typescript'
         env:
-          URL: https://pkg.staging.stainless.com/s
+          URL: https://pkg.stainless.com/s
           AUTH: ${{ steps.github-oidc.outputs.github_token }}
           SHA: ${{ github.sha }}
         run: ./scripts/utils/upload-artifact.sh
